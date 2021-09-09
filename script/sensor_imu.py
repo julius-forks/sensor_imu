@@ -83,6 +83,11 @@ class Sensor:
         self.mag_topic = rospy.get_param('~mag_topic','mag')
         self.mag_freq = float(rospy.get_param('~mag_freq','70'))
         self.gravity = rospy.get_param('~gravity','true')
+        self.q_covar = rospy.get_param('~q_covar',[0,0,0])
+        self.gyro_covar = rospy.get_param('~gyro_covar',[0,0,0])
+        self.acc_covar = rospy.get_param('~acc_covar',[0,0,0])
+        self.mag_covar = rospy.get_param('~mag_covar',[0,0,0])
+        self.serial_read_freq = rospy.get_param('~serial_read_freq',1000)
         #define param
         self.current_time = rospy.Time.now()
         self.previous_time = self.current_time
@@ -113,9 +118,9 @@ class Sensor:
             sys.exit(0)
         rospy.loginfo("Sensor Open Succeed")
         #if move base type is ackermann car like robot and use ackermann msg ,sud ackermann topic,else sub cmd_vel topic
-        self.imu_pub = rospy.Publisher(self.imu_topic,Imu,queue_size=1)
-        self.mag_pub = rospy.Publisher(self.mag_topic,MagneticField,queue_size=1)
-        self.timer_communication = rospy.Timer(rospy.Duration(1.0/1000),self.timerCommunicationCB)
+        self.imu_pub = rospy.Publisher(self.imu_topic,Imu,queue_size=None)
+        self.mag_pub = rospy.Publisher(self.mag_topic,MagneticField,queue_size=None)
+        self.read_freq = rospy.Timer(rospy.Duration(1.0/self.read_freq),self.timerCommunicationCB)
         self.timer_imu = rospy.Timer(rospy.Duration(1.0/self.imu_freq),self.timerIMUCB) 
         self.timer_mag = rospy.Timer(rospy.Duration(1.0/self.mag_freq),self.timerMagCB) 
 
@@ -278,6 +283,19 @@ class Sensor:
         msg.orientation.x = self.Quat[1]
         msg.orientation.y = self.Quat[2]
         msg.orientation.z = self.Quat[3]
+
+        msg.orientation_covariance[0]=self.q_covar[0]
+        msg.orientation_covariance[4]=self.q_covar[1]
+        msg.orientation_covariance[8]=self.q_covar[2]
+
+        msg.angular_velocity_covariance[0]=self.gyro_covar[0]
+        msg.angular_velocity_covariance[4]=self.gyro_covar[1]
+        msg.angular_velocity_covariance[8]=self.gyro_covar[2]
+
+        msg.linear_acceleration_covariance[0]=self.acc_covar[0]
+        msg.linear_acceleration_covariance[4]=self.acc_covar[1]
+        msg.linear_acceleration_covariance[8]=self.acc_covar[2]
+
         self.imu_pub.publish(msg)  
     #IMU Timer callback function to get raw imu info
     def timerMagCB(self,event):
@@ -300,6 +318,10 @@ class Sensor:
         msg.magnetic_field.x = self.Mag[0]
         msg.magnetic_field.y = self.Mag[1]
         msg.magnetic_field.z = self.Mag[2]
+
+        msg.magnetic_field[0]=self.mag_covar[0]
+        msg.magnetic_field[4]=self.mag_covar[1]
+        msg.magnetic_field[8]=self.mag_covar[2]
         self.mag_pub.publish(msg)
 #main function
 if __name__=="__main__":
