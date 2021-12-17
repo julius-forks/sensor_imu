@@ -87,7 +87,7 @@ class Sensor:
         self.gyro_covar = rospy.get_param('~gyro_covar',[0,0,0])
         self.acc_covar = rospy.get_param('~acc_covar',[0,0,0])
         self.mag_covar = rospy.get_param('~mag_covar',[0,0,0])
-        self.serial_read_freq = rospy.get_param('~serial_read_freq',1000)
+        self.read_freq = rospy.get_param('~serial_read_freq',1000)
         #define param
         self.current_time = rospy.Time.now()
         self.previous_time = self.current_time
@@ -319,9 +319,9 @@ class Sensor:
         msg.magnetic_field.y = self.Mag[1]
         msg.magnetic_field.z = self.Mag[2]
 
-        msg.magnetic_field[0]=self.mag_covar[0]
-        msg.magnetic_field[4]=self.mag_covar[1]
-        msg.magnetic_field[8]=self.mag_covar[2]
+        msg.magnetic_field_covariance[0]=self.mag_covar[0]
+        msg.magnetic_field_covariance[4]=self.mag_covar[1]
+        msg.magnetic_field_covariance[8]=self.mag_covar[2]
         self.mag_pub.publish(msg)
 #main function
 if __name__=="__main__":
