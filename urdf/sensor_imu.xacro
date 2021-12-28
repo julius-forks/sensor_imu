@@ -32,7 +32,7 @@
                         <topicName>${ns}/${prefix}_imu</topicName>
                         <serviceName>${ns}/${prefix}_imu_service</serviceName>
                         <gaussianNoise>0.32</gaussianNoise>
-                        <updateRate>100.0</updateRate>
+                        <updateRate>50.0</updateRate>
                   </plugin>
             </gazebo>
 
