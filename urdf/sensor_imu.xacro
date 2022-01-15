@@ -29,6 +29,7 @@
                   <plugin name="${prefix}_imu_plugin" filename="libgazebo_ros_imu.so">
                         <alwaysOn>true</alwaysOn>
                         <bodyName>${prefix}_imu_frame</bodyName>
+                        <frameName>${prefix}_imu_frame</frameName>
                         <topicName>${ns}/${prefix}_imu</topicName>
                         <serviceName>${ns}/${prefix}_imu_service</serviceName>
                         <gaussianNoise>0.32</gaussianNoise>
